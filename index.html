@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KAVACH | Indian Railways Learning Hub</title>
+    
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4', // Greenish tint for Railways/Safety
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a', 
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        },
+                        indigo: {
+                            50: '#eef2ff',
+                            600: '#4f46e5',
+                            900: '#312e81',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Custom Scrollbar */
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #1f2937; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #374151; border-radius: 3px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #4b5563; }
+        
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900 font-sans h-screen overflow-hidden">
+
+    <div id="root"></div>
+
+    <script type="text/babel">
+        // --- ASSETS ---
+        const KAVACH_LOGO_URL = "https://cdn-icons-png.flaticon.com/512/9805/9805363.png"; // Train Shield Icon
+
+        // --- DATA: DASHBOARD TOPICS ---
+        const TOPICS_DATA = [
+            {
+                id: 'kavach',
+                title: "KAVACH System",
+                subtitle: "Indian Railways ATP (TCAS)",
+                description: "Comprehensive training on the Train Collision Avoidance System (TCAS), covering RFID tagging, On-Board Display (OBD), and braking logic.",
+                thumbnail: "shield-check", 
+                color: "bg-brand-600",
+                locked: false,
+                progress: 0
+            },
+            {
+                id: 'cyber',
+                title: "RailNet Security",
+                subtitle: "Network Defense",
+                description: "Securing the signaling infrastructure against cyber threats and unauthorized access.",
+                thumbnail: "lock",
+                color: "bg-indigo-600",
+                locked: true,
+                progress: 0
+            },
+            {
+                id: 'signals',
+                title: "Signaling & Interlocking",
+                subtitle: "Electronic Interlocking",
+                description: "Fundamentals of Electronic Interlocking (EI) and fail-safe logic circuits.",
+                thumbnail: "zap",
+                color: "bg-amber-600",
+                locked: true,
+                progress: 0
+            },
+            {
+                id: 'iot',
+                title: "IoT in Railways",
+                subtitle: "Predictive Maintenance",
+                description: "Using sensors for real-time monitoring of rolling stock health.",
+                thumbnail: "wifi",
+                color: "bg-blue-600",
+                locked: true,
+                progress: 0
+            }
+        ];
+
+        // --- DATA: KAVACH (TRAIN PROTECTION SYSTEM) MODULES ---
+        // RESOURCES now link to REAL Google Searches for the documents
+        const KAVACH_MODULES = [
+            {
+                id: 1,
+                title: "Introduction to Kavach (TCAS)",
+                duration: "12:45",
+                url: "https://youtu.be/L9SMgB5QNOs", 
+                description: "An overview of KAVACH (Train Collision Avoidance System - TCAS), the indigenous Automatic Train Protection (ATP) system. This module explains the SIL-4 safety standards and the objective of preventing Signal Passed at Danger (SPAD).",
+                resources: [
+                    { title: "RDSO TCAS Specification", url: "https://www.google.com/search?q=RDSO+TCAS+Specification+filetype:pdf" },
+                    { title: "Kavach Handbook (IRICEN)", url: "https://www.google.com/search?q=IRICEN+Kavach+Handbook+filetype:pdf" }
+                ]
+            },
+            {
+                id: 2,
+                title: "RFID & Trackside Architecture",
+                duration: "15:20",
+                url: "https://youtu.be/JsokzsfFFmk",
+                description: "Deep dive into the hardware. Understanding the placement of RFID tags on sleepers, their programming, and how the Locomotive reads absolute location data.",
+                resources: [
+                    { title: "RFID Tag Installation Manual", url: "https://www.google.com/search?q=RDSO+RFID+installation+manual+railways" },
+                    { title: "Trackside Layout Diagram", url: "https://www.google.com/search?q=Kavach+Trackside+Architecture+Diagram&tbm=isch" }
+                ]
+            },
+            {
+                id: 3,
+                title: "UHF Communication Backbone",
+                duration: "10:15",
+                url: "https://youtu.be/MDHElMgya4k",
+                description: "Explaining the radio communication logic. How the Station Master (Station TCAS) communicates with the Locomotive (Loco TCAS) using UHF frequencies to update movement authority.",
+                resources: [
+                    { title: "UHF Data Packet Structure", url: "https://www.google.com/search?q=TCAS+UHF+communication+protocol" }
+                ]
+            },
+            {
+                id: 4,
+                title: "Automatic Braking Logic",
+                duration: "18:30",
+                url: "https://youtu.be/5882emtXmag",
+                description: "The safety core. How Kavach calculates the dynamic braking curve based on train length, gradient, and distance to signal. Demonstrates Automatic Brake Application (NB/EB).",
+                resources: [
+                    { title: "Braking Distance Curves", url: "https://www.google.com/search?q=TCAS+braking+curves+RDSO" }
+                ]
+            },
+            {
+                id: 5,
+                title: "Driver Machine Interface (DMI)",
+                duration: "14:10",
+                url: "https://youtu.be/9_rOF6GrQr8",
+                description: "A walkthrough of the pilot's dashboard. Understanding the Circular Speed Gauge, Target Distance Bar, and audio-visual alerts inside the cabin.",
+                resources: [
+                    { title: "DMI Operations Manual", url: "https://www.google.com/search?q=TCAS+DMI+manual+Indian+Railways" }
+                ]
+            },
+            {
+                id: 6,
+                title: "Handling Loop Lines & SPAD",
+                duration: "09:50",
+                url: "https://youtu.be/JuvA7ONSUvw",
+                description: "Critical scenarios: Managing speed restrictions when entering loop lines (turnouts) and the specific logic that triggers during a Signal Passed at Danger event.",
+                resources: [
+                    { title: "SPAD Prevention Guidelines", url: "https://www.google.com/search?q=prevention+of+SPAD+Indian+Railways" }
+                ]
+            },
+            {
+                id: 7,
+                title: "National Deployment Roadmap",
+                duration: "11:00",
+                url: "https://youtu.be/k3CuRhH7Q-g",
+                description: "The future of Kavach. Analysis of the rollout plan across High-Density Networks (HDN) and Highly Used Networks (HUN), and integration with LTE-R.",
+                resources: [
+                    { title: "Mission Raftaar Roadmap", url: "https://www.google.com/search?q=Indian+Railways+Kavach+deployment+roadmap" }
+                ]
+            }
+        ];
+
+        // --- ICONS (Lucide Wrapper) ---
+        const Icon = ({ name, size = 20, className = "" }) => {
+            React.useEffect(() => {
+                if (window.lucide) lucide.createIcons();
+            }, [name]);
+            return <i data-lucide={name} width={size} height={size} className={className}></i>;
+        };
+
+        // --- COMPONENT: TOPIC CARD ---
+        const TopicCard = ({ topic, onSelect }) => {
+            return (
+                <div 
+                    onClick={() => onSelect(topic)}
+                    className={`bg-white rounded-2xl shadow-sm border border-gray-100 p-6 cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group relative overflow-hidden ${topic.locked ? 'opacity-80' : ''}`}
+                >
+                    {topic.locked && (
+                        <div className="absolute top-4 right-4 bg-gray-100 p-2 rounded-full text-gray-400 z-10">
+                            <Icon name="lock" size={16} />
+                        </div>
+                    )}
+                    
+                    <div className={`w-14 h-14 rounded-2xl ${topic.color} flex items-center justify-center text-white mb-6 shadow-lg transform group-hover:scale-110 transition-transform duration-300`}>
+                        <Icon name={topic.thumbnail} size={28} />
+                    </div>
+
+                    <h3 className="text-xl font-bold text-gray-900 mb-1 group-hover:text-brand-600 transition-colors">{topic.title}</h3>
+                    <p className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">{topic.subtitle}</p>
+                    <p className="text-gray-600 text-sm leading-relaxed mb-6">{topic.description}</p>
+
+                    <div className="flex items-center justify-between mt-auto">
+                        <span className={`text-sm font-medium ${topic.locked ? 'text-gray-400' : 'text-brand-600'}`}>
+                            {topic.locked ? 'Coming Soon' : 'Start Learning'}
+                        </span>
+                        {!topic.locked && <Icon name="arrow-right" size={16} className="text-brand-600 transform group-hover:translate-x-1 transition-transform" />}
+                    </div>
+                </div>
+            );
+        };
+
+        // --- COMPONENT: DASHBOARD (PHASE 1) ---
+        const Dashboard = ({ onSelectCourse }) => {
+            return (
+                <div className="flex flex-col h-full bg-gray-50 overflow-y-auto custom-scrollbar">
+                    {/* Main Header - FIXED OVERLAY ISSUE: Removed negative margins on mobile, simplified spacing */}
+                    <header className="bg-brand-800 text-white pt-10 pb-10 px-4 sm:px-8 shadow-xl relative overflow-hidden shrink-0">
+                        {/* Decorative Background Elements */}
+                        <div className="absolute top-0 right-0 w-96 h-96 bg-white opacity-5 rounded-full -mr-20 -mt-20 pointer-events-none"></div>
+                        <div className="absolute bottom-0 left-0 w-64 h-64 bg-black opacity-10 rounded-full -ml-20 -mb-20 pointer-events-none"></div>
+                        
+                        <div className="max-w-7xl mx-auto flex justify-between items-center relative z-10">
+                            <div className="flex items-center space-x-4">
+                                <div>
+                                    <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">Learning Hub</h1>
+                                    <p className="text-brand-100 mt-2 text-lg font-medium">Indian Railways Training Portal</p>
+                                </div>
+                            </div>
+                            
+                            <div className="hidden sm:block">
+                                <img 
+                                    src={KAVACH_LOGO_URL} 
+                                    className="h-20 w-20 rounded-xl bg-white/10 p-2 object-contain backdrop-blur-sm border border-white/20" 
+                                    alt="Platform Logo"
+                                    onError={(e) => { e.target.onerror = null; e.target.src = 'https://placehold.co/80x80/4F46E5/ffffff?text=IR'; }}
+                                />
+                            </div>
+                        </div>
+                    </header>
+
+                    {/* Content Grid - FIXED: Removed negative margin on mobile to prevent text clipping */}
+                    <main className="flex-1 px-4 sm:px-8 py-8 max-w-7xl mx-auto w-full z-20">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
+                            {TOPICS_DATA.map((topic) => (
+                                <TopicCard key={topic.id} topic={topic} onSelect={onSelectCourse} />
+                            ))}
+                        </div>
+                        
+                        <div className="mt-12 text-center pb-8">
+                            <p className="text-gray-500 text-sm">© 2024 Indian Railways Institute. Official Training Material.</p>
+                        </div>
+                    </main>
+                </div>
+            );
+        };
+
+        // --- COMPONENT: SIDEBAR ---
+        const Sidebar = ({ modules, activeModuleId, onSelectModule, completedModules, isOpen, toggleSidebar, onBack }) => {
+            return (
+                <div className={`fixed inset-y-0 left-0 z-30 w-80 bg-gray-900 text-gray-300 transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0 flex flex-col shadow-2xl border-r border-gray-800`}>
+                    
+                    {/* Header with Back Button */}
+                    <div className="p-4 border-b border-gray-800 bg-gray-900/50 backdrop-blur-sm">
+                        <button 
+                            onClick={onBack}
+                            className="flex items-center text-gray-400 hover:text-white mb-4 transition-colors group"
+                        >
+                            <Icon name="arrow-left" size={16} className="mr-2 group-hover:-translate-x-1 transition-transform" />
+                            <span className="text-sm font-medium">Back to Dashboard</span>
+                        </button>
+                        
+                        <div className="flex items-center space-x-3">
+                            <div className="bg-brand-600 p-2 rounded-lg shadow-lg shadow-brand-900/50">
+                                <Icon name="shield-check" className="text-white" size={20} />
+                            </div>
+                            <span className="text-lg font-bold text-white tracking-tight">KAVACH</span>
+                        </div>
+                    </div>
+
+                    {/* Progress */}
+                    <div className="px-6 py-4 border-b border-gray-800 bg-gray-800/30">
+                        <div className="flex justify-between text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">
+                            <span>Progress</span>
+                            <span>{Math.round((completedModules.length / modules.length) * 100)}%</span>
+                        </div>
+                        <div className="w-full bg-gray-800 rounded-full h-1.5 overflow-hidden">
+                            <div 
+                                className="bg-brand-500 h-1.5 rounded-full transition-all duration-700 ease-out shadow-[0_0_10px_rgba(34,197,94,0.5)]" 
+                                style={{ width: `${(completedModules.length / modules.length) * 100}%` }}
+                            ></div>
+                        </div>
+                    </div>
+
+                    {/* Modules */}
+                    <div className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-1">
+                        {modules.map((module, index) => {
+                            const isActive = module.id === activeModuleId;
+                            const isCompleted = completedModules.includes(module.id);
+                            
+                            return (
+                                <button 
+                                    key={module.id}
+                                    onClick={() => onSelectModule(module.id)}
+                                    className={`w-full text-left p-3 rounded-lg transition-all duration-200 group flex items-start space-x-3 ${isActive ? 'bg-brand-900/40 border border-brand-500/30 shadow-inner' : 'hover:bg-gray-800 border border-transparent'}`}
+                                >
+                                    <div className="mt-1 flex-shrink-0">
+                                        {isActive ? (
+                                            <div className="w-5 h-5 rounded-full bg-brand-500 flex items-center justify-center animate-pulse shadow-lg shadow-brand-500/40">
+                                                <Icon name="play" size={10} className="text-white fill-current" />
+                                            </div>
+                                        ) : isCompleted ? (
+                                            <div className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center border border-emerald-500/30">
+                                                <Icon name="check" size={12} />
+                                            </div>
+                                        ) : (
+                                            <div className="w-5 h-5 rounded-full border-2 border-gray-700 group-hover:border-gray-500 text-xs flex items-center justify-center text-gray-600 font-mono">
+                                                {index + 1}
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className={`text-sm font-medium truncate ${isActive ? 'text-white' : 'text-gray-400 group-hover:text-gray-200'}`}>
+                                            {module.title}
+                                        </p>
+                                        <div className="flex items-center mt-1 text-xs text-gray-600 space-x-2">
+                                            <Icon name="clock" size={10} />
+                                            <span>{module.duration} min</span>
+                                        </div>
+                                    </div>
+                                </button>
+                            );
+                        })}
+                    </div>
+                </div>
+            );
+        };
+
+        // --- COMPONENT: VIDEO PLAYER ---
+        const VideoPlayer = ({ url, title }) => {
+            const getEmbedUrl = (rawUrl) => {
+                if (rawUrl.includes('youtu.be/')) {
+                    const id = rawUrl.split('youtu.be/')[1];
+                    return `https://www.youtube.com/embed/${id}?autoplay=1&rel=0&modestbranding=1`;
+                }
+                return rawUrl;
+            };
+
+            return (
+                <div className="w-full aspect-video bg-black rounded-xl overflow-hidden shadow-2xl relative group ring-1 ring-gray-900/5">
+                    <iframe 
+                        src={getEmbedUrl(url)}
+                        className="w-full h-full"
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                    ></iframe>
+                </div>
+            );
+        };
+
+        // --- COMPONENT: COURSE PLAYER (PHASE 2) ---
+        const CoursePlayer = ({ onBack }) => {
+            // State
+            const [activeModuleId, setActiveModuleId] = React.useState(1);
+            const [completedModules, setCompletedModules] = React.useState([]);
+            const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
+            const [activeTab, setActiveTab] = React.useState('overview');
+
+            const activeModule = KAVACH_MODULES.find(m => m.id === activeModuleId);
+
+            // Handlers
+            const handleModuleSelect = (id) => {
+                setActiveModuleId(id);
+                setIsSidebarOpen(false);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            };
+
+            const toggleComplete = () => {
+                if (completedModules.includes(activeModuleId)) {
+                    setCompletedModules(prev => prev.filter(id => id !== activeModuleId));
+                } else {
+                    setCompletedModules(prev => [...prev, activeModuleId]);
+                }
+            };
+
+            const nextModule = () => {
+                const currentIndex = KAVACH_MODULES.findIndex(m => m.id === activeModuleId);
+                if (currentIndex < KAVACH_MODULES.length - 1) {
+                    if (!completedModules.includes(activeModuleId)) {
+                        setCompletedModules(prev => [...prev, activeModuleId]);
+                    }
+                    handleModuleSelect(KAVACH_MODULES[currentIndex + 1].id);
+                }
+            };
+
+            const prevModule = () => {
+                const currentIndex = KAVACH_MODULES.findIndex(m => m.id === activeModuleId);
+                if (currentIndex > 0) {
+                    handleModuleSelect(KAVACH_MODULES[currentIndex - 1].id);
+                }
+            };
+
+            return (
+                <div className="flex h-screen bg-white">
+                    {/* Mobile Overlay */}
+                    {isSidebarOpen && (
+                        <div className="fixed inset-0 bg-black/50 z-20 md:hidden backdrop-blur-sm" onClick={() => setIsSidebarOpen(false)}></div>
+                    )}
+
+                    {/* Sidebar */}
+                    <Sidebar 
+                        modules={KAVACH_MODULES}
+                        activeModuleId={activeModuleId}
+                        onSelectModule={handleModuleSelect}
+                        completedModules={completedModules}
+                        isOpen={isSidebarOpen}
+                        toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
+                        onBack={onBack}
+                    />
+
+                    {/* Main Content */}
+                    <main className="flex-1 flex flex-col h-full overflow-hidden relative">
+                        {/* Mobile Header */}
+                        <div className="md:hidden bg-white border-b p-4 flex items-center justify-between sticky top-0 z-10 shadow-sm">
+                            <div className="flex items-center space-x-3">
+                                <button onClick={() => setIsSidebarOpen(true)} className="p-2 -ml-2 text-gray-600 hover:bg-gray-100 rounded-lg">
+                                    <Icon name="menu" />
+                                </button>
+                                <span className="font-bold text-gray-800">KAVACH Module {activeModuleId}</span>
+                            </div>
+                        </div>
+
+                        {/* Scroll Area */}
+                        <div className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar bg-gray-50/50">
+                            <div className="max-w-5xl mx-auto">
+                                <div className="flex items-center space-x-2 text-xs font-semibold uppercase tracking-wider text-gray-500 mb-4">
+                                    <span onClick={onBack} className="cursor-pointer hover:text-brand-600 transition-colors">Courses</span>
+                                    <Icon name="chevron-right" size={12} />
+                                    <span>KAVACH System</span>
+                                </div>
+
+                                <VideoPlayer url={activeModule.url} title={activeModule.title} />
+
+                                <div className="mt-8 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 border-b border-gray-100 pb-6 mb-6">
+                                        <div>
+                                            <h1 className="text-2xl font-bold text-gray-900">{activeModule.title}</h1>
+                                            <div className="flex items-center mt-2 space-x-4">
+                                                <span className="px-2.5 py-0.5 rounded-full bg-brand-50 text-brand-700 text-xs font-bold border border-brand-100">Module {activeModule.id}</span>
+                                                <span className="text-sm text-gray-500 flex items-center">
+                                                    <Icon name="clock" size={14} className="mr-1" /> {activeModule.duration}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="flex items-center space-x-3">
+                                            <button onClick={prevModule} disabled={activeModuleId === 1} className="p-2.5 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"><Icon name="chevron-left" /></button>
+                                            
+                                            <button onClick={toggleComplete} className={`flex-1 sm:flex-none flex items-center justify-center space-x-2 px-6 py-2.5 rounded-xl border font-semibold transition-all duration-200 ${completedModules.includes(activeModuleId) ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : 'bg-white border-gray-200 text-gray-700 hover:border-gray-300 hover:bg-gray-50'}`}>
+                                                <Icon name={completedModules.includes(activeModuleId) ? "check-circle" : "circle"} size={18} />
+                                                <span>{completedModules.includes(activeModuleId) ? "Completed" : "Mark Done"}</span>
+                                            </button>
+
+                                            <button onClick={nextModule} disabled={activeModuleId === KAVACH_MODULES.length} className="p-2.5 rounded-xl bg-brand-600 text-white hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-brand-600/20 transition-all"><Icon name="chevron-right" /></button>
+                                        </div>
+                                    </div>
+
+                                    {/* Tabs */}
+                                    <div className="flex space-x-8 border-b border-gray-100 mb-6">
+                                        {['Overview', 'Resources', 'Notes'].map((tab) => (
+                                            <button key={tab} onClick={() => setActiveTab(tab.toLowerCase())} className={`pb-3 text-sm font-semibold border-b-2 transition-all duration-200 ${activeTab === tab.toLowerCase() ? 'border-brand-600 text-brand-600' : 'border-transparent text-gray-500 hover:text-gray-800'}`}>{tab}</button>
+                                        ))}
+                                    </div>
+
+                                    <div className="min-h-[200px] animate-fade-in">
+                                        {activeTab === 'overview' && (
+                                            <div>
+                                                <p className="text-gray-600 leading-relaxed text-lg">{activeModule.description}</p>
+                                                <div className="mt-8 bg-brand-50 rounded-xl p-6 border border-brand-100">
+                                                    <h4 className="font-bold text-brand-800 mb-3 flex items-center"><Icon name="lightbulb" size={18} className="mr-2 text-brand-600" />Learning Objectives</h4>
+                                                    <ul className="space-y-2.5 text-brand-900/80 text-sm">
+                                                        <li className="flex items-start"><span className="mr-2.5 mt-1.5 w-1.5 h-1.5 bg-brand-500 rounded-full"></span><span>Understand the operational logic of ATP systems.</span></li>
+                                                        <li className="flex items-start"><span className="mr-2.5 mt-1.5 w-1.5 h-1.5 bg-brand-500 rounded-full"></span><span>Identify key components like RFID tags and UHF towers.</span></li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        )}
+                                        {activeTab === 'resources' && (
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                {activeModule.resources.map((res, idx) => (
+                                                    <a 
+                                                        key={idx} 
+                                                        href={res.url} 
+                                                        target="_blank" 
+                                                        rel="noopener noreferrer"
+                                                        className="p-4 rounded-xl border border-gray-200 hover:border-brand-300 hover:bg-brand-50/30 transition-all cursor-pointer group flex items-center justify-between no-underline"
+                                                    >
+                                                        <div className="flex items-center space-x-3">
+                                                            <div className="bg-gray-100 p-2.5 rounded-lg group-hover:bg-white text-gray-500 group-hover:text-brand-600 transition-colors"><Icon name="file-text" size={20} /></div>
+                                                            <div>
+                                                                <p className="font-semibold text-gray-900">{res.title}</p>
+                                                                <p className="text-xs text-gray-500 mt-0.5">Search Official Docs</p>
+                                                            </div>
+                                                        </div>
+                                                        <Icon name="external-link" size={18} className="text-gray-400 group-hover:text-brand-600" />
+                                                    </a>
+                                                ))}
+                                            </div>
+                                        )}
+                                         {activeTab === 'notes' && (
+                                            <div className="text-center py-10 bg-gray-50 rounded-xl border border-dashed border-gray-200">
+                                                <div className="mx-auto w-12 h-12 bg-white rounded-full flex items-center justify-center mb-3 text-gray-400 shadow-sm"><Icon name="pen-tool" /></div>
+                                                <h3 className="text-gray-900 font-medium">Personal Notes</h3>
+                                                <p className="text-gray-500 text-sm mt-1 mb-4">You haven't added any notes for this module yet.</p>
+                                                <button className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 shadow-sm transition-all">Add Note</button>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </main>
+                </div>
+            );
+        };
+
+        // --- MAIN APP COMPONENT ---
+        const App = () => {
+            const [currentView, setCurrentView] = React.useState('dashboard'); // 'dashboard' or 'course'
+            const [selectedCourseId, setSelectedCourseId] = React.useState(null);
+
+            // Firebase Logic (Environment Safe)
+            React.useEffect(() => {
+                const initFirebase = async () => {
+                    try {
+                        const { initializeApp } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js");
+                        const { getAuth, signInAnonymously, signInWithCustomToken } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js");
+                        const config = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+                        
+                        if (config) {
+                            const app = initializeApp(config);
+                            const auth = getAuth(app);
+                            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                                await signInWithCustomToken(auth, __initial_auth_token);
+                            } else {
+                                await signInAnonymously(auth);
+                            }
+                        }
+                    } catch (e) {
+                        console.log("Firebase not loaded (Standalone Mode)");
+                    }
+                };
+                initFirebase();
+            }, []);
+
+            const handleSelectCourse = (course) => {
+                if (course.locked) {
+                    alert("This course is currently locked. Try 'KAVACH System'.");
+                    return;
+                }
+                if (course.id === 'kavach') {
+                    setSelectedCourseId('kavach');
+                    setCurrentView('course');
+                }
+            };
+
+            const handleBackToDashboard = () => {
+                setCurrentView('dashboard');
+                setSelectedCourseId(null);
+            };
+
+            return (
+                <React.Fragment>
+                    {currentView === 'dashboard' ? (
+                        <Dashboard onSelectCourse={handleSelectCourse} />
+                    ) : (
+                        <CoursePlayer onBack={handleBackToDashboard} />
+                    )}
+                </React.Fragment>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
+
+
