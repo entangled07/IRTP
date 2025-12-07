@@ -3,7 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KAVACH | Indian Railways Learning Hub</title>
+    <title>Railway Professional Training Portal</title>
+    
+    <!-- PWA Meta Tags (Simplified for stability) -->
+    <meta name="theme-color" content="#166534">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Railway Training">
     
     <!-- React & ReactDOM -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -48,13 +53,14 @@
     <style>
         /* Custom Scrollbar */
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #1f2937; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #374151; border-radius: 3px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #4b5563; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f9fafb; } /* Lighter track */
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
         
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
+        /* Animation for fade in content */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -65,128 +71,127 @@
 <body class="bg-gray-50 text-gray-900 font-sans h-screen overflow-hidden">
 
     <div id="root"></div>
-
+    
     <script type="text/babel">
         // --- ASSETS ---
         const KAVACH_LOGO_URL = "https://cdn-icons-png.flaticon.com/512/9805/9805363.png"; // Train Shield Icon
 
-        // --- DATA: DASHBOARD TOPICS ---
+        // --- DATA: DASHBOARD TOPICS (Curriculum Structure) ---
         const TOPICS_DATA = [
             {
                 id: 'kavach',
-                title: "KAVACH System",
-                subtitle: "Indian Railways ATP (TCAS)",
-                description: "Comprehensive training on the Train Collision Avoidance System (TCAS), covering RFID tagging, On-Board Display (OBD), and braking logic.",
+                title: "KAVACH System (Technical)",
+                subtitle: "Automatic Train Protection Syllabus",
+                description: "Master the indigenous Train Collision Avoidance System (TCAS) components, fail-safe architecture, and operational procedures.",
                 thumbnail: "shield-check", 
                 color: "bg-brand-600",
-                locked: false,
+                locked: false, // KAVACH is functional
                 progress: 0
             },
             {
-                id: 'cyber',
-                title: "RailNet Security",
-                subtitle: "Network Defense",
-                description: "Securing the signaling infrastructure against cyber threats and unauthorized access.",
-                thumbnail: "lock",
-                color: "bg-indigo-600",
-                locked: true,
+                id: 'operating',
+                title: "Transportation (Operating)",
+                subtitle: "G&SR and Block Working",
+                description: "The core curriculum for Guards and Station Masters. Covers General & Subsidiary Rules (G&SR) and Safe Block Working procedures.",
+                thumbnail: "route",
+                color: "bg-orange-600",
+                locked: true, // Placeholder
                 progress: 0
             },
             {
-                id: 'signals',
-                title: "Signaling & Interlocking",
-                subtitle: "Electronic Interlocking",
-                description: "Fundamentals of Electronic Interlocking (EI) and fail-safe logic circuits.",
-                thumbnail: "zap",
-                color: "bg-amber-600",
-                locked: true,
+                id: 'commercial',
+                title: "Commercial",
+                subtitle: "Ticket Checking & Passenger Amenities",
+                description: "Training modules for Commercial Clerks/Ticket Examiners (TCs). Focuses on revenue protection, fare rules, and customer service standards.",
+                thumbnail: "ticket",
+                color: "bg-red-600",
+                locked: true, // Placeholder
                 progress: 0
             },
             {
-                id: 'iot',
-                title: "IoT in Railways",
-                subtitle: "Predictive Maintenance",
-                description: "Using sensors for real-time monitoring of rolling stock health.",
-                thumbnail: "wifi",
+                id: 'personnel',
+                title: "Establishment (Personnel)",
+                subtitle: "D&A Rules, Leave Rules, Rajbhasha",
+                description: "Essential training for all railway employees covering Discipline & Appeal (D&A) Rules, Leave entitlements, and the official language policy.",
+                thumbnail: "users",
                 color: "bg-blue-600",
-                locked: true,
+                locked: true, // Placeholder
                 progress: 0
             }
         ];
 
-        // --- DATA: KAVACH (TRAIN PROTECTION SYSTEM) MODULES ---
-        // RESOURCES now link to REAL Google Searches for the documents
+        // --- DATA: KAVACH MODULES (Detailed Syllabus) ---
         const KAVACH_MODULES = [
             {
                 id: 1,
-                title: "Introduction to Kavach (TCAS)",
-                duration: "12:45",
+                title: "KAVACH Fundamentals & SIL-4 Safety",
+                duration: "15:00",
                 url: "https://youtu.be/L9SMgB5QNOs", 
-                description: "An overview of KAVACH (Train Collision Avoidance System - TCAS), the indigenous Automatic Train Protection (ATP) system. This module explains the SIL-4 safety standards and the objective of preventing Signal Passed at Danger (SPAD).",
+                description: "Defining KAVACH objectives (SPAD, collision, speed control). Understanding the concepts of Safety Integrity Level (SIL) and how KAVACH achieves SIL-4 compliance.",
                 resources: [
-                    { title: "RDSO TCAS Specification", url: "https://www.google.com/search?q=RDSO+TCAS+Specification+filetype:pdf" },
-                    { title: "Kavach Handbook (IRICEN)", url: "https://www.google.com/search?q=IRICEN+Kavach+Handbook+filetype:pdf" }
+                    { title: "RDSO TCAS Specification V1.2", url: "https://www.google.com/search?q=RDSO+TCAS+Specification+SIL4+pdf" },
+                    { title: "Safety Case Report Summary", url: "https://www.google.com/search?q=Kavach+Safety+Case+Summary+IRICEN" }
                 ]
             },
             {
                 id: 2,
-                title: "RFID & Trackside Architecture",
-                duration: "15:20",
-                url: "https://youtu.be/JsokzsfFFmk",
-                description: "Deep dive into the hardware. Understanding the placement of RFID tags on sleepers, their programming, and how the Locomotive reads absolute location data.",
+                title: "Loco-side Equipment (OBD/DMI)",
+                duration: "18:30",
+                url: "https://youtu.be/9_rOF6GrQr8",
+                description: "Detailed study of the On-Board Display (OBD) and Driver Machine Interface (DMI). Interpretation of cab signaling, speed indicators, target distance bar, and audio-visual alerts in the loco cabin.",
                 resources: [
-                    { title: "RFID Tag Installation Manual", url: "https://www.google.com/search?q=RDSO+RFID+installation+manual+railways" },
-                    { title: "Trackside Layout Diagram", url: "https://www.google.com/search?q=Kavach+Trackside+Architecture+Diagram&tbm=isch" }
+                    { title: "DMI Operations Manual", url: "https://www.google.com/search?q=Kavach+DMI+User+Guide+pdf" }
                 ]
             },
             {
                 id: 3,
-                title: "UHF Communication Backbone",
-                duration: "10:15",
-                url: "https://youtu.be/MDHElMgya4k",
-                description: "Explaining the radio communication logic. How the Station Master (Station TCAS) communicates with the Locomotive (Loco TCAS) using UHF frequencies to update movement authority.",
+                title: "Trackside Architecture & RFID Tags",
+                duration: "14:10",
+                url: "https://youtu.be/JsokzsfFFmk",
+                description: "Placement and function of trackside equipment. Focus on RFID tags for absolute positioning, including installation standards and maintenance checks of the trackside unit.",
                 resources: [
-                    { title: "UHF Data Packet Structure", url: "https://www.google.com/search?q=TCAS+UHF+communication+protocol" }
+                    { title: "RFID Tag Installation Checklist", url: "https://www.google.com/search?q=RDSO+Kavach+RFID+installation+manual" },
+                    { title: "Trackside Unit Maintenance Guide", url: "https://www.google.com/search?q=Kavach+Trackside+Maintenance+Protocol" }
                 ]
             },
             {
                 id: 4,
-                title: "Automatic Braking Logic",
-                duration: "18:30",
-                url: "https://youtu.be/5882emtXmag",
-                description: "The safety core. How Kavach calculates the dynamic braking curve based on train length, gradient, and distance to signal. Demonstrates Automatic Brake Application (NB/EB).",
+                title: "UHF Radio Communication Network",
+                duration: "12:00",
+                url: "https://youtu.be/MDHElMgya4k",
+                description: "The communication backbone. Explaining the UHF channel allocation, data packet structure, and the communication protocol between the Station TCAS, Loco TCAS, and Repeater Stations.",
                 resources: [
-                    { title: "Braking Distance Curves", url: "https://www.google.com/search?q=TCAS+braking+curves+RDSO" }
+                    { title: "UHF Frequency & Protocol Document", url: "https://www.google.com/search?q=Kavach+UHF+Communication+Standard" }
                 ]
             },
             {
                 id: 5,
-                title: "Driver Machine Interface (DMI)",
-                duration: "14:10",
-                url: "https://youtu.be/9_rOF6GrQr8",
-                description: "A walkthrough of the pilot's dashboard. Understanding the Circular Speed Gauge, Target Distance Bar, and audio-visual alerts inside the cabin.",
+                title: "Speed Monitoring & Dynamic Braking Curve",
+                duration: "20:45",
+                url: "https://youtu.be/5882emtXmag",
+                description: "The core safety algorithm. How KAVACH calculates the permissible speed, target speed, and the dynamic braking curve based on gradient, train characteristics, and distance to the next signal/restriction.",
                 resources: [
-                    { title: "DMI Operations Manual", url: "https://www.google.com/search?q=TCAS+DMI+manual+Indian+Railways" }
+                    { title: "Braking Curve Calculation Logic", url: "https://www.google.com/search?q=TCAS+Dynamic+Braking+Curve+Algorithm" }
                 ]
             },
             {
                 id: 6,
-                title: "Handling Loop Lines & SPAD",
-                duration: "09:50",
+                title: "Operational Scenarios: SPAD & Temporary Restrictions",
+                duration: "10:30",
                 url: "https://youtu.be/JuvA7ONSUvw",
-                description: "Critical scenarios: Managing speed restrictions when entering loop lines (turnouts) and the specific logic that triggers during a Signal Passed at Danger event.",
+                description: "Handling critical situations: KAVACH intervention during Signal Passed at Danger (SPAD), running under temporary speed restrictions (TSR), and navigating loop lines/turnouts safely.",
                 resources: [
-                    { title: "SPAD Prevention Guidelines", url: "https://www.google.com/search?q=prevention+of+SPAD+Indian+Railways" }
+                    { title: "SPAD Event Analysis Guidelines", url: "https://www.google.com/search?q=Kavach+SPAD+Handling+Procedure" }
                 ]
             },
             {
                 id: 7,
-                title: "National Deployment Roadmap",
-                duration: "11:00",
+                title: "Troubleshooting & Maintenance Procedures",
+                duration: "16:50",
                 url: "https://youtu.be/k3CuRhH7Q-g",
-                description: "The future of Kavach. Analysis of the rollout plan across High-Density Networks (HDN) and Highly Used Networks (HUN), and integration with LTE-R.",
+                description: "Standard troubleshooting for Loco TCAS and Station TCAS faults. Procedures for daily checks, periodical maintenance (PMC), and fault logging.",
                 resources: [
-                    { title: "Mission Raftaar Roadmap", url: "https://www.google.com/search?q=Indian+Railways+Kavach+deployment+roadmap" }
+                    { title: "KAVACH Fault Finding Manual", url: "https://www.google.com/search?q=Kavach+Troubleshooting+and+Maintenance+Guide" }
                 ]
             }
         ];
@@ -197,6 +202,45 @@
                 if (window.lucide) lucide.createIcons();
             }, [name]);
             return <i data-lucide={name} width={size} height={size} className={className}></i>;
+        };
+
+        // --- COMPONENT: CUSTOM MODAL (REPLACEMENT FOR ALERT) ---
+        const CustomModal = ({ isOpen, onClose, title, message, iconName }) => {
+            if (!isOpen) return null;
+
+            return (
+                <div 
+                    className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in"
+                    onClick={onClose}
+                >
+                    <div 
+                        className="bg-white rounded-xl shadow-2xl w-full max-w-sm transform transition-all duration-300 scale-100 opacity-100"
+                        onClick={e => e.stopPropagation()} // Prevent closing when clicking inside modal
+                    >
+                        <div className="p-6">
+                            <div className="flex items-start">
+                                <div className="flex-shrink-0">
+                                    <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600">
+                                        <Icon name={iconName} size={20} />
+                                    </div>
+                                </div>
+                                <div className="ml-4 pt-1">
+                                    <h3 className="text-lg font-bold text-gray-900">{title}</h3>
+                                    <p className="mt-1 text-sm text-gray-500">{message}</p>
+                                </div>
+                            </div>
+                            <div className="mt-6 flex justify-end">
+                                <button
+                                    onClick={onClose}
+                                    className="px-4 py-2 text-sm font-semibold rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 shadow-md transition-colors"
+                                >
+                                    Got it
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
         };
 
         // --- COMPONENT: TOPIC CARD ---
@@ -234,7 +278,7 @@
         const Dashboard = ({ onSelectCourse }) => {
             return (
                 <div className="flex flex-col h-full bg-gray-50 overflow-y-auto custom-scrollbar">
-                    {/* Main Header - FIXED OVERLAY ISSUE: Removed negative margins on mobile, simplified spacing */}
+                    {/* Main Header */}
                     <header className="bg-brand-800 text-white pt-10 pb-10 px-4 sm:px-8 shadow-xl relative overflow-hidden shrink-0">
                         {/* Decorative Background Elements */}
                         <div className="absolute top-0 right-0 w-96 h-96 bg-white opacity-5 rounded-full -mr-20 -mt-20 pointer-events-none"></div>
@@ -243,8 +287,8 @@
                         <div className="max-w-7xl mx-auto flex justify-between items-center relative z-10">
                             <div className="flex items-center space-x-4">
                                 <div>
-                                    <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">Learning Hub</h1>
-                                    <p className="text-brand-100 mt-2 text-lg font-medium">Indian Railways Training Portal</p>
+                                    <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">Railway Professional Training Portal</h1>
+                                    <p className="text-brand-100 mt-2 text-lg font-medium">Curriculum Focused on Indian Railways Operations</p>
                                 </div>
                             </div>
                             
@@ -259,16 +303,16 @@
                         </div>
                     </header>
 
-                    {/* Content Grid - FIXED: Removed negative margin on mobile to prevent text clipping */}
+                    {/* Content Grid */}
                     <main className="flex-1 px-4 sm:px-8 py-8 max-w-7xl mx-auto w-full z-20">
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-fade-in">
                             {TOPICS_DATA.map((topic) => (
                                 <TopicCard key={topic.id} topic={topic} onSelect={onSelectCourse} />
                             ))}
                         </div>
                         
                         <div className="mt-12 text-center pb-8">
-                            <p className="text-gray-500 text-sm">© 2024 Indian Railways Institute. Official Training Material.</p>
+                            <p className="text-gray-500 text-sm">© 2024 Railway Training Resource. Unofficial Learning Material.</p>
                         </div>
                     </main>
                 </div>
@@ -294,7 +338,7 @@
                             <div className="bg-brand-600 p-2 rounded-lg shadow-lg shadow-brand-900/50">
                                 <Icon name="shield-check" className="text-white" size={20} />
                             </div>
-                            <span className="text-lg font-bold text-white tracking-tight">KAVACH</span>
+                            <span className="text-lg font-bold text-white tracking-tight">KAVACH TCAS</span>
                         </div>
                     </div>
 
@@ -359,8 +403,10 @@
         // --- COMPONENT: VIDEO PLAYER ---
         const VideoPlayer = ({ url, title }) => {
             const getEmbedUrl = (rawUrl) => {
+                // Example for YouTube: converts https://youtu.be/L9SMgB5QNOs to the embed URL
                 if (rawUrl.includes('youtu.be/')) {
                     const id = rawUrl.split('youtu.be/')[1];
+                    // Setting autoplay=1 and rel=0 for a better viewing experience
                     return `https://www.youtube.com/embed/${id}?autoplay=1&rel=0&modestbranding=1`;
                 }
                 return rawUrl;
@@ -383,6 +429,7 @@
         const CoursePlayer = ({ onBack }) => {
             // State
             const [activeModuleId, setActiveModuleId] = React.useState(1);
+            // NOTE: completedModules is now purely local state (not persistent)
             const [completedModules, setCompletedModules] = React.useState([]);
             const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
             const [activeTab, setActiveTab] = React.useState('overview');
@@ -398,8 +445,10 @@
 
             const toggleComplete = () => {
                 if (completedModules.includes(activeModuleId)) {
+                    // Mark as incomplete
                     setCompletedModules(prev => prev.filter(id => id !== activeModuleId));
                 } else {
+                    // Mark as complete
                     setCompletedModules(prev => [...prev, activeModuleId]);
                 }
             };
@@ -407,6 +456,7 @@
             const nextModule = () => {
                 const currentIndex = KAVACH_MODULES.findIndex(m => m.id === activeModuleId);
                 if (currentIndex < KAVACH_MODULES.length - 1) {
+                    // Automatically mark the current module as complete before moving on
                     if (!completedModules.includes(activeModuleId)) {
                         setCompletedModules(prev => [...prev, activeModuleId]);
                     }
@@ -500,8 +550,9 @@
                                                 <div className="mt-8 bg-brand-50 rounded-xl p-6 border border-brand-100">
                                                     <h4 className="font-bold text-brand-800 mb-3 flex items-center"><Icon name="lightbulb" size={18} className="mr-2 text-brand-600" />Learning Objectives</h4>
                                                     <ul className="space-y-2.5 text-brand-900/80 text-sm">
-                                                        <li className="flex items-start"><span className="mr-2.5 mt-1.5 w-1.5 h-1.5 bg-brand-500 rounded-full"></span><span>Understand the operational logic of ATP systems.</span></li>
-                                                        <li className="flex items-start"><span className="mr-2.5 mt-1.5 w-1.5 h-1.5 bg-brand-500 rounded-full"></span><span>Identify key components like RFID tags and UHF towers.</span></li>
+                                                        <li className="flex items-start"><span className="mr-2.5 mt-1.5 w-1.5 h-1.5 bg-brand-500 rounded-full"></span><span>Articulate the necessity of Automatic Train Protection (ATP) systems in high-density corridors.</span></li>
+                                                        <li className="flex items-start"><span className="mr-2.5 mt-1.5 w-1.5 h-1.5 bg-brand-500 rounded-full"></span><span>Accurately identify and describe the function of all Loco-side and Trackside components.</span></li>
+                                                        <li className="flex items-start"><span className="mr-2.5 mt-1.5 w-1.5 h-1.5 bg-brand-500 rounded-full"></span><span>Simulate and respond correctly to critical system alerts and brake interventions.</span></li>
                                                     </ul>
                                                 </div>
                                             </div>
@@ -532,7 +583,7 @@
                                             <div className="text-center py-10 bg-gray-50 rounded-xl border border-dashed border-gray-200">
                                                 <div className="mx-auto w-12 h-12 bg-white rounded-full flex items-center justify-center mb-3 text-gray-400 shadow-sm"><Icon name="pen-tool" /></div>
                                                 <h3 className="text-gray-900 font-medium">Personal Notes</h3>
-                                                <p className="text-gray-500 text-sm mt-1 mb-4">You haven't added any notes for this module yet.</p>
+                                                <p className="text-gray-500 text-sm mt-1 mb-4">You haven't added any notes for this module yet. **Note: This app does not save data.**</p>
                                                 <button className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 shadow-sm transition-all">Add Note</button>
                                             </div>
                                         )}
@@ -547,38 +598,22 @@
 
         // --- MAIN APP COMPONENT ---
         const App = () => {
-            const [currentView, setCurrentView] = React.useState('dashboard'); // 'dashboard' or 'course'
+            const [currentView, setCurrentView] = React.useState('dashboard'); 
             const [selectedCourseId, setSelectedCourseId] = React.useState(null);
-
-            // Firebase Logic (Environment Safe)
-            React.useEffect(() => {
-                const initFirebase = async () => {
-                    try {
-                        const { initializeApp } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js");
-                        const { getAuth, signInAnonymously, signInWithCustomToken } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js");
-                        const config = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
-                        
-                        if (config) {
-                            const app = initializeApp(config);
-                            const auth = getAuth(app);
-                            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                                await signInWithCustomToken(auth, __initial_auth_token);
-                            } else {
-                                await signInAnonymously(auth);
-                            }
-                        }
-                    } catch (e) {
-                        console.log("Firebase not loaded (Standalone Mode)");
-                    }
-                };
-                initFirebase();
-            }, []);
+            const [isModalOpen, setIsModalOpen] = React.useState(false);
+            const [modalContent, setModalContent] = React.useState({});
 
             const handleSelectCourse = (course) => {
                 if (course.locked) {
-                    alert("This course is currently locked. Try 'KAVACH System'.");
+                    setModalContent({
+                        title: `${course.title} Syllabus Locked`,
+                        message: `The '${course.title}' curriculum is currently under development to align with the latest training guidelines. Please check back later or start with the functional 'KAVACH System' course.`,
+                        iconName: "lock"
+                    });
+                    setIsModalOpen(true);
                     return;
                 }
+                
                 if (course.id === 'kavach') {
                     setSelectedCourseId('kavach');
                     setCurrentView('course');
@@ -597,6 +632,15 @@
                     ) : (
                         <CoursePlayer onBack={handleBackToDashboard} />
                     )}
+                    
+                    {/* Locked Course Modal */}
+                    <CustomModal 
+                        isOpen={isModalOpen}
+                        onClose={() => setIsModalOpen(false)}
+                        title={modalContent.title}
+                        message={modalContent.message}
+                        iconName={modalContent.iconName}
+                    />
                 </React.Fragment>
             );
         };
@@ -606,5 +650,4 @@
     </script>
 </body>
 </html>
-
 
