@@ -4,19 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Railway Professional Training Portal</title>
-    
+
     <!-- PWA Meta Tags (Simplified for stability) -->
     <meta name="theme-color" content="#166534">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="Railway Training">
-    
+
     <!-- React & ReactDOM -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    
+
     <!-- Babel for JSX -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    
+
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
@@ -49,14 +49,14 @@
             }
         }
     </script>
-    
+
     <style>
         /* Custom Scrollbar */
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: #f9fafb; } /* Lighter track */
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
-        
+
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
@@ -68,10 +68,11 @@
         .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-900 font-sans h-screen overflow-hidden">
+<!-- FIXED: Removed h-screen and overflow-hidden to allow natural mobile scrolling -->
+<body class="bg-gray-50 text-gray-900 font-sans min-h-screen">
 
     <div id="root"></div>
-    
+
     <script type="text/babel">
         // --- ASSETS ---
         const KAVACH_LOGO_URL = "https://cdn-icons-png.flaticon.com/512/9805/9805363.png"; // Train Shield Icon
@@ -255,7 +256,7 @@
                             <Icon name="lock" size={16} />
                         </div>
                     )}
-                    
+
                     <div className={`w-14 h-14 rounded-2xl ${topic.color} flex items-center justify-center text-white mb-6 shadow-lg transform group-hover:scale-110 transition-transform duration-300`}>
                         <Icon name={topic.thumbnail} size={28} />
                     </div>
@@ -277,13 +278,14 @@
         // --- COMPONENT: DASHBOARD (PHASE 1) ---
         const Dashboard = ({ onSelectCourse }) => {
             return (
-                <div className="flex flex-col h-full bg-gray-50 overflow-y-auto custom-scrollbar">
+                // FIXED: Changed from "h-full overflow-y-auto" to "min-h-screen" for natural scrolling
+                <div className="flex flex-col min-h-screen bg-gray-50">
                     {/* Main Header */}
                     <header className="bg-brand-800 text-white pt-10 pb-10 px-4 sm:px-8 shadow-xl relative overflow-hidden shrink-0">
                         {/* Decorative Background Elements */}
                         <div className="absolute top-0 right-0 w-96 h-96 bg-white opacity-5 rounded-full -mr-20 -mt-20 pointer-events-none"></div>
                         <div className="absolute bottom-0 left-0 w-64 h-64 bg-black opacity-10 rounded-full -ml-20 -mb-20 pointer-events-none"></div>
-                        
+
                         <div className="max-w-7xl mx-auto flex justify-between items-center relative z-10">
                             <div className="flex items-center space-x-4">
                                 <div>
@@ -291,7 +293,7 @@
                                     <p className="text-brand-100 mt-2 text-lg font-medium">Curriculum Focused on Indian Railways Operations</p>
                                 </div>
                             </div>
-                            
+
                             <div className="hidden sm:block">
                                 <img 
                                     src={KAVACH_LOGO_URL} 
@@ -310,9 +312,9 @@
                                 <TopicCard key={topic.id} topic={topic} onSelect={onSelectCourse} />
                             ))}
                         </div>
-                        
+
                         <div className="mt-12 text-center pb-8">
-                            <p className="text-gray-500 text-sm">© 2024 Railway Training Resource. Unofficial Learning Material.</p>
+                            <p className="text-gray-500 text-sm">© 2025 Railway Training Resource. Unofficial Learning Material.</p>
                         </div>
                     </main>
                 </div>
@@ -323,7 +325,7 @@
         const Sidebar = ({ modules, activeModuleId, onSelectModule, completedModules, isOpen, toggleSidebar, onBack }) => {
             return (
                 <div className={`fixed inset-y-0 left-0 z-30 w-80 bg-gray-900 text-gray-300 transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0 flex flex-col shadow-2xl border-r border-gray-800`}>
-                    
+
                     {/* Header with Back Button */}
                     <div className="p-4 border-b border-gray-800 bg-gray-900/50 backdrop-blur-sm">
                         <button 
@@ -333,7 +335,7 @@
                             <Icon name="arrow-left" size={16} className="mr-2 group-hover:-translate-x-1 transition-transform" />
                             <span className="text-sm font-medium">Back to Dashboard</span>
                         </button>
-                        
+
                         <div className="flex items-center space-x-3">
                             <div className="bg-brand-600 p-2 rounded-lg shadow-lg shadow-brand-900/50">
                                 <Icon name="shield-check" className="text-white" size={20} />
@@ -361,7 +363,7 @@
                         {modules.map((module, index) => {
                             const isActive = module.id === activeModuleId;
                             const isCompleted = completedModules.includes(module.id);
-                            
+
                             return (
                                 <button 
                                     key={module.id}
@@ -523,10 +525,10 @@
                                                 </span>
                                             </div>
                                         </div>
-                                        
+
                                         <div className="flex items-center space-x-3">
                                             <button onClick={prevModule} disabled={activeModuleId === 1} className="p-2.5 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"><Icon name="chevron-left" /></button>
-                                            
+
                                             <button onClick={toggleComplete} className={`flex-1 sm:flex-none flex items-center justify-center space-x-2 px-6 py-2.5 rounded-xl border font-semibold transition-all duration-200 ${completedModules.includes(activeModuleId) ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : 'bg-white border-gray-200 text-gray-700 hover:border-gray-300 hover:bg-gray-50'}`}>
                                                 <Icon name={completedModules.includes(activeModuleId) ? "check-circle" : "circle"} size={18} />
                                                 <span>{completedModules.includes(activeModuleId) ? "Completed" : "Mark Done"}</span>
@@ -613,7 +615,7 @@
                     setIsModalOpen(true);
                     return;
                 }
-                
+
                 if (course.id === 'kavach') {
                     setSelectedCourseId('kavach');
                     setCurrentView('course');
@@ -632,7 +634,7 @@
                     ) : (
                         <CoursePlayer onBack={handleBackToDashboard} />
                     )}
-                    
+
                     {/* Locked Course Modal */}
                     <CustomModal 
                         isOpen={isModalOpen}
@@ -650,3 +652,4 @@
     </script>
 </body>
 </html>
+
