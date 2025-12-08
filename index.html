@@ -6,25 +6,26 @@
     <title>Railway Professional Training Portal</title>
 
     <!-- Icons: Uses local 'icon.png' file -->
+    <!-- CRITICAL: Make sure icon.png is in the same directory as index.html -->
     <link rel="icon" type="image/png" href="icon.png">
     <link rel="apple-touch-icon" href="icon.png">
 
-    <!-- PWA Meta Tags -->
+    <!-- PWA Meta Tags (Optimized for Android Install Prompt) -->
     <meta name="theme-color" content="#166534">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Railway Trg">
     <meta name="mobile-web-app-capable" content="yes">
 
-    <!-- Embedded Manifest for "Add to Home Screen" capability -->
+    <!-- Embedded Manifest for "Install App" capability -->
     <link rel="manifest" id="manifest-placeholder">
     <script>
-        // Dynamically generating manifest to ensure it works with local file
+        // Dynamically generating manifest to ensure it works with a Data URI
         const manifest = {
-            "name": "Railway Professional Training",
-            "short_name": "Railway Trg",
-            "start_url": ".",
-            "display": "standalone",
+            "name": "IR Training Portal",
+            "short_name": "IR Training", // Changed short name for clarity
+            "start_url": "./", // Absolute path reference relative to the root
+            "display": "standalone", // CRITICAL for triggering the PWA prompt
             "background_color": "#ffffff",
             "theme_color": "#166534",
             "orientation": "portrait",
@@ -390,7 +391,7 @@
 
                         <div className="mt-12 text-center pb-8">
                             <p className="text-gray-500 text-sm">© 2025 Railway Training Resource. Unofficial Learning Material.</p>
-                            <p className="text-gray-400 text-xs mt-2">App Version 2.2 (Local Icon Support)</p>
+                            <p className="text-gray-400 text-xs mt-2">App Version 2.3 (PWA Optimization)</p>
                         </div>
                     </main>
                 </div>
@@ -748,5 +749,4 @@
     </script>
 </body>
 </html>
-
 
