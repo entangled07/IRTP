@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Railway Professional Training Portal</title>
 
+    <!-- Standard Favicon -->
+    <link rel="icon" type="image/png" href="192x192.png">
+
     <!-- PWA Meta Tags -->
     <meta name="theme-color" content="#166534">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -16,6 +19,9 @@
     <link rel="manifest" id="manifest-placeholder">
     <script>
         // Dynamically generating manifest to ensure it works as a Data URI
+        // resolving the local image path relative to the current page location
+        const localIconUrl = new URL('192x192.png', window.location.href).toString();
+
         const manifest = {
             "name": "Railway Professional Training",
             "short_name": "Railway Trg",
@@ -26,12 +32,12 @@
             "orientation": "portrait",
             "icons": [
                 {
-                    "src": "https://cdn-icons-png.flaticon.com/512/9805/9805363.png",
+                    "src": localIconUrl,
                     "sizes": "192x192",
                     "type": "image/png"
                 },
                 {
-                    "src": "https://cdn-icons-png.flaticon.com/512/9805/9805363.png",
+                    "src": localIconUrl,
                     "sizes": "512x512",
                     "type": "image/png"
                 }
@@ -106,7 +112,8 @@
 
     <script type="text/babel">
         // --- ASSETS ---
-        const KAVACH_LOGO_URL = "https://cdn-icons-png.flaticon.com/512/9805/9805363.png"; 
+        // Updated to use the local file
+        const KAVACH_LOGO_URL = "192x192.png"; 
 
         // --- DATA ---
         const TOPICS_DATA = [
@@ -749,5 +756,4 @@
     </script>
 </body>
 </html>
-
 
